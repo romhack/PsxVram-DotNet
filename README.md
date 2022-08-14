@@ -1,7 +1,8 @@
 PsxVram-DotNet
 ===========
 
-Viewer for displaying PSX VRAM dumps.
+Viewer for displaying PSX VRAM dumps.  
+![screenshot](PsxVram-DotNet screenshot.png)
 
 Features
 -----
