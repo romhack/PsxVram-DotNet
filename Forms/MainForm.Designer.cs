@@ -1,4 +1,4 @@
-﻿namespace PsxVram_DotNet
+﻿namespace PsxVram_DotNet.Forms
 {
     partial class MainForm
     {
@@ -91,6 +91,7 @@
             this.MainPictureBox.Size = new System.Drawing.Size(1024, 512);
             this.MainPictureBox.TabIndex = 0;
             this.MainPictureBox.TabStop = false;
+            this.MainPictureBox.Visible = false;
             this.MainPictureBox.Paint += new System.Windows.Forms.PaintEventHandler(this.PictureBox1_Paint);
             this.MainPictureBox.MouseClick += new System.Windows.Forms.MouseEventHandler(this.mainPictureBox_mouseClick);
             this.MainPictureBox.MouseLeave += new System.EventHandler(this.MainPictureBox_MouseLeave);
@@ -114,6 +115,7 @@
             this.groupBoxMode.Controls.Add(this.radioButton8bpp);
             this.groupBoxMode.Controls.Add(this.radioButton16bpp);
             this.groupBoxMode.Controls.Add(this.radioButton24bpp);
+            this.groupBoxMode.Enabled = false;
             this.groupBoxMode.Location = new System.Drawing.Point(8, 31);
             this.groupBoxMode.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.groupBoxMode.Name = "groupBoxMode";
@@ -345,6 +347,7 @@
             this.groupBoxPalette.Controls.Add(this.numericUpDownClutY);
             this.groupBoxPalette.Controls.Add(this.numericUpDownClutX);
             this.groupBoxPalette.Controls.Add(this.labelClutY);
+            this.groupBoxPalette.Enabled = false;
             this.groupBoxPalette.Location = new System.Drawing.Point(746, 31);
             this.groupBoxPalette.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.groupBoxPalette.Name = "groupBoxPalette";
@@ -481,6 +484,7 @@
             this.groupBoxRectangle.Controls.Add(this.labelRectangleY);
             this.groupBoxRectangle.Controls.Add(this.labelRectangleWidth);
             this.groupBoxRectangle.Controls.Add(this.numericUpDownX);
+            this.groupBoxRectangle.Enabled = false;
             this.groupBoxRectangle.Location = new System.Drawing.Point(320, 31);
             this.groupBoxRectangle.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.groupBoxRectangle.Name = "groupBoxRectangle";
@@ -549,6 +553,7 @@
             // refreshButton
             // 
             this.refreshButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.refreshButton.Enabled = false;
             this.refreshButton.Image = ((System.Drawing.Image)(resources.GetObject("refreshButton.Image")));
             this.refreshButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.refreshButton.Name = "refreshButton";
@@ -559,6 +564,7 @@
             // saveImageButton
             // 
             this.saveImageButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.saveImageButton.Enabled = false;
             this.saveImageButton.Image = ((System.Drawing.Image)(resources.GetObject("saveImageButton.Image")));
             this.saveImageButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.saveImageButton.Name = "saveImageButton";
@@ -579,6 +585,7 @@
             // 
             // openFileDialog
             // 
+            this.openFileDialog.RestoreDirectory = true;
             this.openFileDialog.Title = "Select binary VRAM dump file";
             // 
             // statusStrip
@@ -648,6 +655,7 @@
             this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.MaximizeBox = false;
             this.Name = "MainForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "PsxVram-DotNet";
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MainForm_KeyDown);

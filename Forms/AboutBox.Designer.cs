@@ -1,4 +1,4 @@
-﻿namespace PsxVram_DotNet
+﻿namespace PsxVram_DotNet.Forms
 {
     partial class AboutBox
     {
@@ -57,7 +57,7 @@
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(194, 25);
             this.label1.TabIndex = 14;
-            this.label1.Text = "PsxVram-DotNet v.0.1";
+            this.label1.Text = "PsxVram-DotNet v.0.2";
             // 
             // linkLabel1
             // 
@@ -85,9 +85,9 @@
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(146, 38);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(176, 15);
+            this.label2.Size = new System.Drawing.Size(100, 15);
             this.label2.TabIndex = 18;
-            this.label2.Text = "Viewer for displaying PSX VRAM";
+            this.label2.Text = "PSX VRAM viewer";
             // 
             // AboutBox
             // 

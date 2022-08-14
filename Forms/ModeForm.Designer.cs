@@ -1,4 +1,4 @@
-﻿namespace PsxVram_DotNet
+﻿namespace PsxVram_DotNet.Forms
 {
     partial class ModeForm
     {

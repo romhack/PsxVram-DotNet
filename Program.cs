@@ -1,16 +1,17 @@
-﻿namespace PsxVram_DotNet
+﻿using PsxVram_DotNet.Forms;
+
+namespace PsxVram_DotNet;
+
+internal static class Program
 {
-    internal static class Program
+    /// <summary>
+    ///     Главная точка входа для приложения.
+    /// </summary>
+    [STAThread]
+    private static void Main()
     {
-        /// <summary>
-        /// Главная точка входа для приложения.
-        /// </summary>
-        [STAThread]
-        static void Main()
-        {
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new MainForm());
-        }
+        Application.EnableVisualStyles();
+        Application.SetCompatibleTextRenderingDefault(false);
+        Application.Run(new MainForm());
     }
 }
