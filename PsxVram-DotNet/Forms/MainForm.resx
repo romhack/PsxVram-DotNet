@@ -58,10 +58,10 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <metadata name="colorDialogTransparent.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>151, 14</value>
+    <value>4, 11</value>
   </metadata>
   <metadata name="toolStripMain.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>516, 14</value>
+    <value>207, 12</value>
   </metadata>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="openFileButton.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
@@ -103,18 +103,18 @@
         xO62garAAez3szBE75wOVPwfJ47ZNRWsDitA08yRtOe/dsUxMI0sDjYEA8TttENWpFJy5P/1Z1/+b73w
         +v/VJ1/+KxUfRjUkfqc1VCcUxO5ciaxg+t7H/yOmXgKzQyZd/D91zyOEZjDesQyqEwogAYamCIIz5l/7
         P3HnQ3Txx1CdUAAKbVQFYGzRePL/lSef/0vkHECVi971A6oTCnC44NTdj//Vy45iiAMxhguA8Yyh6H/a
-        vGsYYlC8BKoTCqJ3WTDEzviHrlCt9AgKH44xYgEEQPGLpAikGQRUMQzZORmqAw2AUhiaIVg140yJMABy
-        HiieQQEFiZ3HDDE7lzLE7LCCqhhUgIEBABMIN7INuVqWAAAAAElFTkSuQmCC
+        vGsYYlC8BKoTCqJ3WTDEdv5DV6hWegSFD8cYsQACoPhFUgTSDAKqGIbsnAzVgQZAKQzNEKyacaZEGAA5
+        DxTPoICCxM5jhpidSxlidlhBVQwqwMAAAPzEN6MCMSaHAAAAAElFTkSuQmCC
 </value>
   </data>
   <metadata name="openFileDialog.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>642, 14</value>
+    <value>361, 17</value>
   </metadata>
   <metadata name="statusStrip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>873, 14</value>
+    <value>481, 13</value>
   </metadata>
   <metadata name="$this.TrayHeight" type="System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>67</value>
+    <value>88</value>
   </metadata>
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>

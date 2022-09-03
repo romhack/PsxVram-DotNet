@@ -68,6 +68,9 @@
             this.statusLabelCursor = new System.Windows.Forms.ToolStripStatusLabel();
             this.statusLabelRectangle = new System.Windows.Forms.ToolStripStatusLabel();
             this.statusLabelClut = new System.Windows.Forms.ToolStripStatusLabel();
+            this.MainPanel = new System.Windows.Forms.Panel();
+            this.zoomTrackBar = new System.Windows.Forms.TrackBar();
+            this.label1 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.MainPictureBox)).BeginInit();
             this.groupBoxMode.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownHeight)).BeginInit();
@@ -80,22 +83,27 @@
             this.groupBoxRectangle.SuspendLayout();
             this.toolStripMain.SuspendLayout();
             this.statusStrip.SuspendLayout();
+            this.MainPanel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.zoomTrackBar)).BeginInit();
             this.SuspendLayout();
             // 
             // MainPictureBox
             // 
             this.MainPictureBox.BackColor = System.Drawing.Color.Fuchsia;
-            this.MainPictureBox.Location = new System.Drawing.Point(8, 120);
+            this.MainPictureBox.Location = new System.Drawing.Point(0, 0);
             this.MainPictureBox.Margin = new System.Windows.Forms.Padding(0);
             this.MainPictureBox.Name = "MainPictureBox";
             this.MainPictureBox.Size = new System.Drawing.Size(1024, 512);
+            this.MainPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.MainPictureBox.TabIndex = 0;
             this.MainPictureBox.TabStop = false;
             this.MainPictureBox.Visible = false;
             this.MainPictureBox.Paint += new System.Windows.Forms.PaintEventHandler(this.PictureBox1_Paint);
             this.MainPictureBox.MouseClick += new System.Windows.Forms.MouseEventHandler(this.mainPictureBox_mouseClick);
+            this.MainPictureBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.MainPictureBox_MouseDown);
             this.MainPictureBox.MouseLeave += new System.EventHandler(this.MainPictureBox_MouseLeave);
             this.MainPictureBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.MainPictureBox_MouseMove);
+            this.MainPictureBox.MouseUp += new System.Windows.Forms.MouseEventHandler(this.MainPictureBox_MouseUp);
             // 
             // checkBoxTransparency
             // 
@@ -636,6 +644,38 @@
             this.statusLabelClut.Text = "CLUT X:0000 Y:000 Offset:0x00000";
             this.statusLabelClut.Visible = false;
             // 
+            // MainPanel
+            // 
+            this.MainPanel.AutoScroll = true;
+            this.MainPanel.Controls.Add(this.MainPictureBox);
+            this.MainPanel.Location = new System.Drawing.Point(12, 121);
+            this.MainPanel.Name = "MainPanel";
+            this.MainPanel.Size = new System.Drawing.Size(1024, 512);
+            this.MainPanel.TabIndex = 15;
+            // 
+            // zoomTrackBar
+            // 
+            this.zoomTrackBar.AutoSize = false;
+            this.zoomTrackBar.Enabled = false;
+            this.zoomTrackBar.LargeChange = 1;
+            this.zoomTrackBar.Location = new System.Drawing.Point(53, 92);
+            this.zoomTrackBar.Maximum = 4;
+            this.zoomTrackBar.Minimum = 1;
+            this.zoomTrackBar.Name = "zoomTrackBar";
+            this.zoomTrackBar.Size = new System.Drawing.Size(259, 20);
+            this.zoomTrackBar.TabIndex = 16;
+            this.zoomTrackBar.Value = 1;
+            this.zoomTrackBar.ValueChanged += new System.EventHandler(this.zoomTrackBar_ValueChanged);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(8, 92);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(39, 15);
+            this.label1.TabIndex = 17;
+            this.label1.Text = "Zoom";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -643,12 +683,14 @@
             this.AutoSize = true;
             this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(1043, 664);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.zoomTrackBar);
+            this.Controls.Add(this.MainPanel);
             this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.toolStripMain);
             this.Controls.Add(this.groupBoxRectangle);
             this.Controls.Add(this.groupBoxPalette);
             this.Controls.Add(this.groupBoxMode);
-            this.Controls.Add(this.MainPictureBox);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
@@ -676,6 +718,8 @@
             this.toolStripMain.PerformLayout();
             this.statusStrip.ResumeLayout(false);
             this.statusStrip.PerformLayout();
+            this.MainPanel.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.zoomTrackBar)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -722,6 +766,9 @@
         private ToolStripStatusLabel statusLabelClut;
         private ToolStripStatusLabel statusLabelCursor;
         private ToolStripStatusLabel statusLabelRectangle;
+        private Panel MainPanel;
+        private TrackBar zoomTrackBar;
+        private Label label1;
     }
 }
 

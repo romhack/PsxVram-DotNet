@@ -7,7 +7,6 @@ public partial class MainForm : Form
     public const int MaxWidth = 1024;
     public const int MaxHeight = 512;
     private const string DefaultCursorString = "Cursor X:0000 Y:000 Offset:0x00000";
-    private readonly Pen _clutPen = new(Color.Magenta, 1);
     private readonly Size _default4BppRectangleSize = new(0x40, 0x100);
     private readonly Size _default8BppRectangleSize = new(0x80, 0x100); //Default 256x256 rect on 16bpp main form
 
@@ -27,20 +26,22 @@ public partial class MainForm : Form
 
     private readonly FileHelper _fileHelper;
 
-    private readonly Pen _mainBorderPen = new(Color.Cyan, 1);
-    private readonly Brush _mainFillBrush = new SolidBrush(Color.FromArgb(0x80, 0, 0xFF, 0xFF));
-
     private readonly ModeForm _modeForm = new();
     private bool _clutMode;
     private Rectangle _clutRectangle = new(0, 0, 0x10, 1);
 
     private Modes _currentMode = Modes.Mode16Bpp;
+    private Point _currentScrollPoint;
     private Rectangle _mainRectangle;
 
     private Mode16Bpp? _mode16Bpp;
     private Mode24Bpp? _mode24Bpp;
     private Mode4Bpp? _mode4Bpp;
     private Mode8Bpp? _mode8Bpp;
+    private bool _panning;
+    private Point _panningStartPoint;
+
+    private int _zoomFactor = 1;
 
     public MainForm()
     {
@@ -75,6 +76,7 @@ public partial class MainForm : Form
         {
             return;
         }
+
         EnableControls();
         DisplaySourceBytes(newSourceBytes);
         Activate();
@@ -87,12 +89,14 @@ public partial class MainForm : Form
         {
             return;
         }
+
         DisplaySourceBytes(updatedSourceBytes);
     }
 
     private void EnableControls()
     {
         refreshButton.Enabled = true;
+        zoomTrackBar.Enabled = true;
         saveImageButton.Enabled = true;
         groupBoxMode.Enabled = true;
         groupBoxRectangle.Enabled = true;
@@ -116,14 +120,28 @@ public partial class MainForm : Form
         }
     }
 
+    private Rectangle GetZoomedRectangle(Rectangle originalRectangle)
+    {
+        return new Rectangle(originalRectangle.X * _zoomFactor,
+            originalRectangle.Y * _zoomFactor,
+            originalRectangle.Width * _zoomFactor,
+            originalRectangle.Height * _zoomFactor);
+    }
+
     private void PictureBox1_Paint(object sender, PaintEventArgs e)
     {
-        e.Graphics.DrawRectangle(_mainBorderPen, _mainRectangle);
-        e.Graphics.FillRectangle(_mainFillBrush, _mainRectangle);
+        Pen clutPen = new(Color.Magenta, 1);
+        Pen mainBorderPen = new(Color.Cyan, 1);
+        Brush mainFillBrush = new SolidBrush(Color.FromArgb(0x80, 0, 0xFF, 0xFF));
+        var zoomedMainRectangle = GetZoomedRectangle(_mainRectangle);
+        e.Graphics.DrawRectangle(mainBorderPen, zoomedMainRectangle);
+        e.Graphics.FillRectangle(mainFillBrush, zoomedMainRectangle);
         if (_clutMode)
         {
-            e.Graphics.DrawLine(_clutPen, 0, 0, _clutRectangle.X, _clutRectangle.Y);
-            e.Graphics.DrawRectangle(_clutPen, _clutRectangle.X, _clutRectangle.Y - 1, _clutRectangle.Width, 2);
+            var zoomedClutRectangle = GetZoomedRectangle(_clutRectangle);
+            e.Graphics.DrawLine(clutPen, 0, 0, zoomedClutRectangle.X, zoomedClutRectangle.Y);
+            e.Graphics.DrawRectangle(clutPen, zoomedClutRectangle.X, zoomedClutRectangle.Y - 1,
+                zoomedClutRectangle.Width, 2);
         }
     }
 
@@ -201,6 +219,11 @@ public partial class MainForm : Form
         return number - remainder;
     }
 
+    private Point GetZoomedPoint(MouseEventArgs mousePoint)
+    {
+        return new Point(mousePoint.X / _zoomFactor, mousePoint.Y / _zoomFactor);
+    }
+
     private void SetMainRectangle(int x, int y, int width, int height)
     {
         _mainRectangle.Width = width;
@@ -230,13 +253,14 @@ public partial class MainForm : Form
 
     private void mainPictureBox_mouseClick(object sender, MouseEventArgs e)
     {
+        var zoomedPoint = GetZoomedPoint(e);
         switch (e.Button)
         {
             case MouseButtons.Left:
             {
                 //Due to PSX hardware specifications in indexed modes:
-                var newMainX = RoundOff(e.X, 0x40);
-                var newMainY = RoundOff(e.Y, 0x100);
+                var newMainX = RoundOff(zoomedPoint.X, 0x40);
+                var newMainY = RoundOff(zoomedPoint.Y, 0x100);
                 SetMainRectangle(newMainX, newMainY, _mainRectangle.Width, _mainRectangle.Height);
                 break;
             }
@@ -244,8 +268,8 @@ public partial class MainForm : Form
             {
                 if (_clutMode)
                 {
-                    var x = RoundOff(e.X, 0x10); //Due to PSX specification
-                    SetClutRectangle(x, e.Y, _clutRectangle.Width);
+                    var x = RoundOff(zoomedPoint.X, 0x10); //Due to PSX specification
+                    SetClutRectangle(x, zoomedPoint.Y, _clutRectangle.Width);
                 }
 
                 break;
@@ -520,13 +544,45 @@ public partial class MainForm : Form
 
     private void MainPictureBox_MouseMove(object sender, MouseEventArgs e)
     {
-        var offset = (e.Y * MaxWidth + e.X) * 2;
-        statusLabelCursor.Text = $@"Cursor X:{e.X:D4} Y:{e.Y:D3} Offset:0x{offset:X5}";
+        if (_panning)
+        {
+            _currentScrollPoint.X = _currentScrollPoint.X + _panningStartPoint.X - e.X;
+            _currentScrollPoint.Y = _currentScrollPoint.Y + _panningStartPoint.Y - e.Y;
+            MainPanel.AutoScrollPosition = _currentScrollPoint;
+        }
+
+        var zoomedPoint = GetZoomedPoint(e);
+        var offset = (zoomedPoint.Y * MaxWidth + zoomedPoint.X) * 2;
+        statusLabelCursor.Text = $@"Cursor X:{zoomedPoint.X:D4} Y:{zoomedPoint.Y:D3} Offset:0x{offset:X5}";
     }
 
     private void MainPictureBox_MouseLeave(object sender, EventArgs e)
     {
         statusLabelCursor.Text = DefaultCursorString;
+    }
+
+    private void MainPictureBox_MouseDown(object sender, MouseEventArgs e)
+    {
+        if (e.Button == MouseButtons.Middle && _zoomFactor != 1)
+        {
+            _panning = true;
+            Cursor.Current = Cursors.NoMove2D;
+            _panningStartPoint.X = e.X;
+            _panningStartPoint.Y = e.Y;
+        }
+    }
+
+    private void MainPictureBox_MouseUp(object sender, MouseEventArgs e)
+    {
+        _panning = false;
+        Cursor.Current = Cursors.Default;
+    }
+
+    private void zoomTrackBar_ValueChanged(object sender, EventArgs e)
+    {
+        _zoomFactor = zoomTrackBar.Value;
+        MainPictureBox.Width = MaxWidth * _zoomFactor;
+        MainPictureBox.Height = MaxHeight * _zoomFactor;
     }
 
     private enum Modes

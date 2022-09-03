@@ -53,8 +53,9 @@ It is possible to save mode window contents to BMP file in corresponding VRAM du
 Hotkeys
 -------
 - W/S/A/D: Move view rectangle
-- Ctrl + (W/S/A/D) Move CLUT line
+- Ctrl + (W/S/A/D): Move CLUT line
 - Shift +(W/S/A/D) direction: Change rectangle size
+- Mouse. Left: move view rectangle, Right: move CLUT line, Middle: drag image if zoomed
 
 History
 --------
