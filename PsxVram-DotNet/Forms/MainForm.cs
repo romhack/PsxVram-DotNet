@@ -1,4 +1,5 @@
 ﻿using PsxVram_DotNet.Modes;
+using System.Drawing.Drawing2D;
 
 namespace PsxVram_DotNet.Forms;
 
@@ -7,22 +8,13 @@ public partial class MainForm : Form
     public const int MaxWidth = 1024;
     public const int MaxHeight = 512;
     private const string DefaultCursorString = "Cursor X:0000 Y:000 Offset:0x00000";
-    private readonly Size _default4BppRectangleSize = new(0x40, 0x100);
-    private readonly Size _default8BppRectangleSize = new(0x80, 0x100); //Default 256x256 rect on 16bpp main form
+    private const int DefaultSizeSelectedIndex = 1;
+    private const int ModeFormOffset = 1050;
 
-    private readonly List<Size> _defaultRectangleSizes = new()
-    {
-        new Size(256, 240),
-        new Size(320, 240),
-        new Size(368, 240),
-        new Size(512, 240),
-        new Size(640, 240),
-        new Size(256, 480),
-        new Size(320, 480),
-        new Size(368, 480),
-        new Size(512, 480),
-        new Size(640, 480)
-    };
+    private static readonly Pen ClutPen = new(Color.Magenta, 1);
+    private static readonly Pen MainBorderPen = new(Color.Cyan, 1);
+    private static readonly Brush MainFillBrush = new SolidBrush(Color.FromArgb(0x80, 0, 0xFF, 0xFF));
+
 
     private readonly FileHelper _fileHelper;
 
@@ -30,18 +22,14 @@ public partial class MainForm : Form
     private bool _clutMode;
     private Rectangle _clutRectangle = new(0, 0, 0x10, 1);
 
-    private Modes _currentMode = Modes.Mode16Bpp;
+
     private Point _currentScrollPoint;
     private Rectangle _mainRectangle;
-
-    private Mode16Bpp? _mode16Bpp;
-    private Mode24Bpp? _mode24Bpp;
-    private Mode4Bpp? _mode4Bpp;
-    private Mode8Bpp? _mode8Bpp;
     private bool _panning;
     private Point _panningStartPoint;
-
     private int _zoomFactor = 1;
+    private ModeSet? _modeSet;
+
 
     public MainForm()
     {
@@ -55,9 +43,11 @@ public partial class MainForm : Form
         checkBoxTransparency.Location = radioButtonGrayscale.Location;
         buttonSelectTransparentColor.Location = labelClutX.Location;
         comboBoxDefaultRectangleSize.Location = labelRectangleX.Location;
-        comboBoxDefaultRectangleSize.SelectedIndex = 1; //320x240 default resolution
+        comboBoxDefaultRectangleSize.SelectedIndex = DefaultSizeSelectedIndex; //320x240 default resolution
+        var defaultSize = Mode.DefaultRectangleSizes[comboBoxDefaultRectangleSize.SelectedIndex];
+        SetMainRectangle(_mainRectangle.X, _mainRectangle.Y, defaultSize.Width, defaultSize.Height);
         statusLabelCursor.Text = DefaultCursorString;
-        _modeForm.Left = Left + 1050;
+        _modeForm.Left = Left + ModeFormOffset;
         _modeForm.Top = Top;
         var startupSourceBytes = _fileHelper.ReadStartupFile();
         if (startupSourceBytes is null)
@@ -66,7 +56,7 @@ public partial class MainForm : Form
         }
 
         EnableControls();
-        DisplaySourceBytes(startupSourceBytes);
+        CreateModeSet(startupSourceBytes);
     }
 
     private void openFileButton_Click(object sender, EventArgs e)
@@ -76,9 +66,16 @@ public partial class MainForm : Form
         {
             return;
         }
-
         EnableControls();
-        DisplaySourceBytes(newSourceBytes);
+        if (_modeSet is null)
+        {
+            CreateModeSet(newSourceBytes);
+        }
+        else
+        {
+            ReloadModeSet(newSourceBytes);
+        }
+        
         Activate();
     }
 
@@ -89,8 +86,7 @@ public partial class MainForm : Form
         {
             return;
         }
-
-        DisplaySourceBytes(updatedSourceBytes);
+        ReloadModeSet(updatedSourceBytes);
     }
 
     private void EnableControls()
@@ -105,19 +101,19 @@ public partial class MainForm : Form
     }
 
 
-    private void DisplaySourceBytes(byte[] sourceBytes)
+    private void CreateModeSet(byte[] sourceBytes)
     {
-        _mode16Bpp = new Mode16Bpp(sourceBytes);
-        _mode8Bpp = new Mode8Bpp(sourceBytes);
-        _mode4Bpp = new Mode4Bpp(sourceBytes);
-        _mode24Bpp = new Mode24Bpp(sourceBytes);
-        MainPictureBox.Image = _mode16Bpp.Bitmap;
-
+        _modeSet = new ModeSet(sourceBytes);
+        MainPictureBox.Refresh();
         UpdateModeWindow();
-        if (Application.OpenForms.OfType<ModeForm>().Any() == false)
-        {
-            _modeForm.Show(this);
-        }
+        _modeForm.Show(this);
+    }
+
+    private void ReloadModeSet(byte[] sourceBytes)
+    {
+        _modeSet?.Reload(sourceBytes);
+        MainPictureBox.Refresh();
+        UpdateModeWindow();
     }
 
     private Rectangle GetZoomedRectangle(Rectangle originalRectangle)
@@ -130,87 +126,47 @@ public partial class MainForm : Form
 
     private void PictureBox1_Paint(object sender, PaintEventArgs e)
     {
-        Pen clutPen = new(Color.Magenta, 1);
-        Pen mainBorderPen = new(Color.Cyan, 1);
-        Brush mainFillBrush = new SolidBrush(Color.FromArgb(0x80, 0, 0xFF, 0xFF));
+        e.Graphics.InterpolationMode = InterpolationMode.NearestNeighbor;//Not possible to disable interpolation - redraw bitmap every paint
+        e.Graphics.PixelOffsetMode = PixelOffsetMode.Half;
+        if (_modeSet is null)
+        {
+            return;
+        }
+        e.Graphics.DrawImage(
+            _modeSet.Mode16Bpp.GetBitmap(),
+            new Rectangle(0, 0, MainPictureBox.Width, MainPictureBox.Height),
+            0, 0, MaxWidth, MaxHeight,
+            GraphicsUnit.Pixel);
+
         var zoomedMainRectangle = GetZoomedRectangle(_mainRectangle);
-        e.Graphics.DrawRectangle(mainBorderPen, zoomedMainRectangle);
-        e.Graphics.FillRectangle(mainFillBrush, zoomedMainRectangle);
+        e.Graphics.DrawRectangle(MainBorderPen, zoomedMainRectangle);
+        e.Graphics.FillRectangle(MainFillBrush, zoomedMainRectangle);
         if (_clutMode)
         {
             var zoomedClutRectangle = GetZoomedRectangle(_clutRectangle);
-            e.Graphics.DrawLine(clutPen, 0, 0, zoomedClutRectangle.X, zoomedClutRectangle.Y);
-            e.Graphics.DrawRectangle(clutPen, zoomedClutRectangle.X, zoomedClutRectangle.Y - 1,
-                zoomedClutRectangle.Width, 2);
+            e.Graphics.DrawLine(ClutPen, 0, 0, zoomedClutRectangle.X, zoomedClutRectangle.Y);
+            e.Graphics.DrawRectangle(ClutPen, zoomedClutRectangle.X, zoomedClutRectangle.Y,
+                zoomedClutRectangle.Width + 1, zoomedClutRectangle.Height + 1);
         }
-    }
-
-    private Mode? GetCurrentMode()
-    {
-        Dictionary<Modes, Mode?> modeTagDictionary = new()
-        {
-            { Modes.Mode16Bpp, _mode16Bpp },
-            { Modes.Mode8Bpp, _mode8Bpp },
-            { Modes.Mode4Bpp, _mode4Bpp },
-            { Modes.Mode24Bpp, _mode24Bpp }
-        };
-        var currentMode = modeTagDictionary[_currentMode];
-        return currentMode;
     }
 
     private void UpdateModeWindow()
     {
-        var currentMode = GetCurrentMode();
-        if (currentMode is null)
+        if (_modeSet is null)
         {
             return;
         }
-
-        Bitmap? updatedBitmap = null;
-        switch (currentMode)
+        var trimConfiguration = new TrimConfiguration
         {
-            case Mode24Bpp mode24:
-                updatedBitmap = mode24.GetTrimmedBitmap(_mainRectangle);
-                break;
+            Rectangle = _mainRectangle,
+            IsTransparent = checkBoxTransparency.Checked,
+            ClutColors = radioButtonClut.Checked ? _modeSet.GetClutColors(_clutRectangle) : Array.Empty<Color>(),
+            IsInverted = checkBoxGrayscaleInverted.Checked
+        };
 
-            case Mode16Bpp mode16:
-                updatedBitmap = mode16.GetTrimmedBitmap(_mainRectangle, checkBoxTransparency.Checked);
-                break;
-
-            case Mode8Bpp mode8Bpp:
-                if (radioButtonClut.Checked)
-                {
-                    var updatedClutColors = _mode16Bpp?.GetClutColors(_clutRectangle);
-                    updatedBitmap = mode8Bpp.GetTrimmedBitmap(_mainRectangle, updatedClutColors);
-                }
-                else
-                {
-                    updatedBitmap =
-                        mode8Bpp.GetTrimmedBitmap(_mainRectangle, inverted: checkBoxGrayscaleInverted.Checked);
-                }
-
-                break;
-
-            case Mode4Bpp mode4Bpp:
-                if (radioButtonClut.Checked)
-                {
-                    var updatedClutColors = _mode16Bpp?.GetClutColors(_clutRectangle);
-                    updatedBitmap = mode4Bpp.GetTrimmedBitmap(_mainRectangle, updatedClutColors);
-                }
-                else
-                {
-                    updatedBitmap =
-                        mode4Bpp.GetTrimmedBitmap(_mainRectangle, inverted: checkBoxGrayscaleInverted.Checked);
-                }
-
-                break;
-        }
-
-        if (updatedBitmap is not null)
-        {
-            _modeForm.SetModeFormPictureBox(updatedBitmap);
-            _modeForm.SetModeFormCaption();
-        }
+        var updatedBitmap = _modeSet.CurrentMode.GetTrimmedBitmap(trimConfiguration);
+        _modeForm.SetModeFormPictureBox(updatedBitmap);
+        _modeForm.SetModeFormCaption();
     }
 
     private static int RoundOff(int number, int interval)
@@ -309,10 +265,10 @@ public partial class MainForm : Form
     {
         _clutMode = false;
         HandleVisibility();
-        _currentMode = Modes.Mode24Bpp;
+        _modeSet.SetCurrentModeIndex(ModeSet.Modes.Mode24Bpp);
         if (radioButtonDefaultRectangle.Checked)
         {
-            var newSize = _defaultRectangleSizes[comboBoxDefaultRectangleSize.SelectedIndex];
+            var newSize = _modeSet.CurrentMode.GetDefaultSize(comboBoxDefaultRectangleSize.SelectedIndex);
             SetMainRectangle(_mainRectangle.X, _mainRectangle.Y, newSize.Width, newSize.Height);
         }
 
@@ -324,10 +280,10 @@ public partial class MainForm : Form
     {
         _clutMode = false;
         HandleVisibility();
-        _currentMode = Modes.Mode16Bpp;
+        _modeSet.SetCurrentModeIndex(ModeSet.Modes.Mode16Bpp);
         if (radioButtonDefaultRectangle.Checked)
         {
-            var newSize = _defaultRectangleSizes[comboBoxDefaultRectangleSize.SelectedIndex];
+            var newSize = _modeSet.CurrentMode.GetDefaultSize(comboBoxDefaultRectangleSize.SelectedIndex);
             SetMainRectangle(_mainRectangle.X, _mainRectangle.Y, newSize.Width, newSize.Height);
         }
 
@@ -339,12 +295,12 @@ public partial class MainForm : Form
     {
         _clutMode = radioButtonClut.Checked;
         HandleVisibility();
-        _currentMode = Modes.Mode8Bpp;
+        _modeSet.SetCurrentModeIndex(ModeSet.Modes.Mode8Bpp);
         SetClutRectangle(_clutRectangle.X, _clutRectangle.Y, 0x100);
         if (radioButtonDefaultRectangle.Checked)
         {
-            SetMainRectangle(_mainRectangle.X, _mainRectangle.Y, _default8BppRectangleSize.Width,
-                _default8BppRectangleSize.Height);
+            var newSize = _modeSet.CurrentMode.GetDefaultSize(comboBoxDefaultRectangleSize.SelectedIndex);
+            SetMainRectangle(_mainRectangle.X, _mainRectangle.Y, newSize.Width, newSize.Height);
         }
 
         MainPictureBox.Refresh();
@@ -355,12 +311,12 @@ public partial class MainForm : Form
     {
         _clutMode = radioButtonClut.Checked;
         HandleVisibility();
-        _currentMode = Modes.Mode4Bpp;
+        _modeSet.SetCurrentModeIndex(ModeSet.Modes.Mode4Bpp);
         SetClutRectangle(_clutRectangle.X, _clutRectangle.Y, 0x10);
         if (radioButtonDefaultRectangle.Checked)
         {
-            SetMainRectangle(_mainRectangle.X, _mainRectangle.Y, _default4BppRectangleSize.Width,
-                _default4BppRectangleSize.Height);
+            var newSize = _modeSet.CurrentMode.GetDefaultSize(comboBoxDefaultRectangleSize.SelectedIndex);
+            SetMainRectangle(_mainRectangle.X, _mainRectangle.Y, newSize.Width, newSize.Height);
         }
 
         MainPictureBox.Refresh();
@@ -387,26 +343,8 @@ public partial class MainForm : Form
     {
         HandleVisibility();
 
-        switch (_currentMode)
-        {
-            case Modes.Mode4Bpp:
-                SetMainRectangle(_mainRectangle.X, _mainRectangle.Y, _default4BppRectangleSize.Width,
-                    _default4BppRectangleSize.Height);
-                break;
-
-            case Modes.Mode8Bpp:
-                SetMainRectangle(_mainRectangle.X, _mainRectangle.Y, _default8BppRectangleSize.Width,
-                    _default8BppRectangleSize.Height);
-                break;
-
-            case Modes.Mode16Bpp:
-            case Modes.Mode24Bpp:
-            default:
-                var newSize = _defaultRectangleSizes[comboBoxDefaultRectangleSize.SelectedIndex];
-                SetMainRectangle(_mainRectangle.X, _mainRectangle.Y, newSize.Width, newSize.Height);
-                break;
-        }
-
+        var newSize = _modeSet.CurrentMode.GetDefaultSize(comboBoxDefaultRectangleSize.SelectedIndex);
+        SetMainRectangle(_mainRectangle.X, _mainRectangle.Y, newSize.Width, newSize.Height);
         MainPictureBox.Refresh();
         UpdateModeWindow();
     }
@@ -432,7 +370,11 @@ public partial class MainForm : Form
 
     private void comboBoxDefaultRectangleSize_SelectedIndexChanged(object sender, EventArgs e)
     {
-        var newSize = _defaultRectangleSizes[comboBoxDefaultRectangleSize.SelectedIndex];
+        if (_modeSet is null)
+        {
+            return;
+        }
+        var newSize = _modeSet.CurrentMode.GetDefaultSize(comboBoxDefaultRectangleSize.SelectedIndex);
         SetMainRectangle(_mainRectangle.X, _mainRectangle.Y, newSize.Width, newSize.Height);
         MainPictureBox.Refresh();
         UpdateModeWindow();
@@ -585,11 +527,4 @@ public partial class MainForm : Form
         MainPictureBox.Height = MaxHeight * _zoomFactor;
     }
 
-    private enum Modes
-    {
-        Mode16Bpp,
-        Mode8Bpp,
-        Mode4Bpp,
-        Mode24Bpp
-    }
 }

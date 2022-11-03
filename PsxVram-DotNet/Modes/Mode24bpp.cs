@@ -7,17 +7,16 @@ namespace PsxVram_DotNet.Modes;
 internal class Mode24Bpp : Mode
 {
     private const int Max24BppWidth = 682; //(1024 - 1) * 2 / 3
-    private readonly Bitmap _bitmap;
 
     public Mode24Bpp(IReadOnlyList<byte> sourceBytes)
     {
         var rgbBytes = ConvertDumpToRgb(sourceBytes);
 
-        _bitmap = new Bitmap(Max24BppWidth, MainForm.MaxHeight, PixelFormat.Format24bppRgb);
-        var bitmapData = _bitmap.LockBits(new Rectangle(0, 0, _bitmap.Width, _bitmap.Height), ImageLockMode.WriteOnly,
-            _bitmap.PixelFormat);
+        Bitmap = new Bitmap(Max24BppWidth, MainForm.MaxHeight, PixelFormat.Format24bppRgb);
+        var bitmapData = Bitmap.LockBits(new Rectangle(0, 0, Bitmap.Width, Bitmap.Height), ImageLockMode.WriteOnly,
+            Bitmap.PixelFormat);
         Marshal.Copy(rgbBytes, 0, bitmapData.Scan0, rgbBytes.Length);
-        _bitmap.UnlockBits(bitmapData);
+        Bitmap.UnlockBits(bitmapData);
     }
 
     private static byte[]
@@ -41,11 +40,11 @@ internal class Mode24Bpp : Mode
         return resultBytes;
     }
 
-    public Bitmap GetTrimmedBitmap(Rectangle mainRectangle)
+    public override Bitmap GetTrimmedBitmap(TrimConfiguration trimConfiguration)
     {
-        Rectangle = mainRectangle;
-        Rectangle.X = mainRectangle.X * 2 / 3;
-        Rectangle.Width = mainRectangle.Width * 2 / 3;
-        return _bitmap.Clone(Rectangle, _bitmap.PixelFormat);
+        var rectangle = trimConfiguration.Rectangle
+            with { Width = trimConfiguration.Rectangle.Width * 2 / 3, X = trimConfiguration.Rectangle.X * 2 / 3 };
+
+        return Bitmap.Clone(rectangle, Bitmap.PixelFormat);
     }
 }

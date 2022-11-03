@@ -89,7 +89,7 @@
             // 
             // MainPictureBox
             // 
-            this.MainPictureBox.BackColor = System.Drawing.Color.Fuchsia;
+            this.MainPictureBox.BackColor = System.Drawing.Color.Transparent;
             this.MainPictureBox.Location = new System.Drawing.Point(0, 0);
             this.MainPictureBox.Margin = new System.Windows.Forms.Padding(0);
             this.MainPictureBox.Name = "MainPictureBox";
@@ -544,7 +544,7 @@
             this.aboutButton});
             this.toolStripMain.Location = new System.Drawing.Point(0, 0);
             this.toolStripMain.Name = "toolStripMain";
-            this.toolStripMain.Size = new System.Drawing.Size(1043, 25);
+            this.toolStripMain.Size = new System.Drawing.Size(1049, 25);
             this.toolStripMain.TabIndex = 12;
             this.toolStripMain.Text = "toolStrip1";
             // 
@@ -604,7 +604,7 @@
             this.statusLabelClut});
             this.statusStrip.Location = new System.Drawing.Point(0, 641);
             this.statusStrip.Name = "statusStrip";
-            this.statusStrip.Size = new System.Drawing.Size(1043, 23);
+            this.statusStrip.Size = new System.Drawing.Size(1049, 23);
             this.statusStrip.SizingGrip = false;
             this.statusStrip.TabIndex = 14;
             this.statusStrip.Text = "statusStrip1";
@@ -682,7 +682,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(1043, 664);
+            this.ClientSize = new System.Drawing.Size(1049, 664);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.zoomTrackBar);
             this.Controls.Add(this.MainPanel);

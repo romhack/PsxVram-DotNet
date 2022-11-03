@@ -4,13 +4,12 @@ namespace PsxVram_DotNet.Modes;
 
 internal class Mode8Bpp : Mode
 {
-    private readonly Bitmap _bitmap;
     private readonly Color[] _invertedColors;
     private readonly Color[] _orderedColors = new Color[0x100];
 
     public Mode8Bpp(byte[] sourceBytes)
     {
-        _bitmap = CreateBitmapFromBytes(sourceBytes, 2, PixelFormat.Format8bppIndexed);
+        Bitmap = CreateBitmapFromBytes(sourceBytes, 2, PixelFormat.Format8bppIndexed);
         for (var i = 0; i <= 0xFF; i++)
         {
             _orderedColors[i] = Color.FromArgb(i, i, i);
@@ -19,30 +18,33 @@ internal class Mode8Bpp : Mode
         _invertedColors = _orderedColors.Reverse().ToArray();
     }
 
-    public Bitmap GetTrimmedBitmap(Rectangle mainRectangle, Color[]? clutColors = null, bool inverted = false)
+    public override Bitmap GetTrimmedBitmap(TrimConfiguration trimConfiguration)
     {
         Color[] currentColors;
-        if (clutColors is not null) //CLUT mode
+        if (trimConfiguration.ClutColors.Any()) //CLUT mode
         {
-            currentColors = clutColors;
+            currentColors = trimConfiguration.ClutColors;
         }
         else //Normal/Inverted mode
         {
-            currentColors = inverted ? _invertedColors : _orderedColors;
+            currentColors = trimConfiguration.IsInverted ? _invertedColors : _orderedColors;
         }
 
-        var currentPalette = _bitmap.Palette;
-        for (var i = 0; i < _bitmap.Palette.Entries.Length; i++)
+        var currentPalette = Bitmap.Palette;
+        for (var i = 0; i < Bitmap.Palette.Entries.Length; i++)
         {
             currentPalette.Entries[i] = currentColors[i];
         }
 
-        _bitmap.Palette = currentPalette;
+        Bitmap.Palette = currentPalette;
 
-        Rectangle.X = mainRectangle.X * 2;
-        Rectangle.Y = mainRectangle.Y;
-        Rectangle.Width = mainRectangle.Width * 2;
-        Rectangle.Height = mainRectangle.Height;
-        return _bitmap.Clone(Rectangle, _bitmap.PixelFormat);
+        var rectangle = trimConfiguration.Rectangle 
+            with {Width = trimConfiguration.Rectangle.Width * 2, X = trimConfiguration.Rectangle.X * 2};
+        return Bitmap.Clone(rectangle, Bitmap.PixelFormat);
+    }
+
+    public override Size GetDefaultSize(int _)
+    {
+        return new Size(0x80, 0x100); //Default 256x256 rect on 16bpp main form;
     }
 }

@@ -13,11 +13,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="matrix.ico" />
+    <Compile Remove="Properties\DataSources\**" />
+    <EmbeddedResource Remove="Properties\DataSources\**" />
+    <None Remove="Properties\DataSources\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Properties\DataSources\" />
+    <Content Include="matrix.ico" />
   </ItemGroup>
 
   <ItemGroup>

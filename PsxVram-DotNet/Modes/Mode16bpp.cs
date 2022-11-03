@@ -4,7 +4,14 @@ namespace PsxVram_DotNet.Modes;
 
 internal class Mode16Bpp : Mode
 {
+
     private readonly Bitmap _transparentBitmap;
+
+    public Bitmap GetBitmap()
+    {
+        return Bitmap;
+    }
+
 
     public Mode16Bpp(byte[] sourceBytes)
     {
@@ -13,7 +20,7 @@ internal class Mode16Bpp : Mode
         _transparentBitmap = CreateBitmapFromBytes(argbBytes, 1, PixelFormat.Format16bppArgb1555);
     }
 
-    public Bitmap Bitmap { get; }
+
 
     private static byte[] ConvertDumpToArgb(byte[] dumpBytes)
     {
@@ -47,10 +54,10 @@ internal class Mode16Bpp : Mode
         return clutColors;
     }
 
-    public Bitmap GetTrimmedBitmap(Rectangle mainRectangle, bool transparent)
+    public override Bitmap GetTrimmedBitmap(TrimConfiguration trimConfiguration)
     {
-        return transparent
-            ? _transparentBitmap.Clone(mainRectangle, _transparentBitmap.PixelFormat)
-            : Bitmap.Clone(mainRectangle, Bitmap.PixelFormat);
+        return trimConfiguration.IsTransparent
+            ? _transparentBitmap.Clone(trimConfiguration.Rectangle, _transparentBitmap.PixelFormat)
+            : Bitmap.Clone(trimConfiguration.Rectangle, Bitmap.PixelFormat);
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.IO.Compression;
+﻿using System.Drawing.Imaging;
+using System.IO.Compression;
 using System.Text;
 
 namespace PsxVram_DotNet;
@@ -192,7 +193,7 @@ internal class FileHelper
         var filePath = Path.Combine(fileDirectory, fileName);
         try
         {
-            modeImage.Save(filePath);
+            modeImage.Save(filePath, ImageFormat.Bmp);
         }
         catch (Exception)
         {
