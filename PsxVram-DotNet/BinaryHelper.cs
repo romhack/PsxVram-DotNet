@@ -201,6 +201,8 @@ internal class BinaryHelper
             MessageBox.Show(@"Could not write image", @"Write file error", MessageBoxButtons.OK,
                 MessageBoxIcon.Error);
         }
+
+        MessageBox.Show($@"Image saved as '{fileName}'",@"Save successful", MessageBoxButtons.OK, MessageBoxIcon.Information);
     }
 
     public void SaveBinary(byte[] bytes, string postfix)
@@ -217,5 +219,21 @@ internal class BinaryHelper
             MessageBox.Show(@"Could not write binary file", @"Write file error", MessageBoxButtons.OK,
                 MessageBoxIcon.Error);
         }
+        MessageBox.Show($@"File saved as '{fileName}'
+Contents are copied to clipboard", @"Save successful", MessageBoxButtons.OK, MessageBoxIcon.Information);
+    }
+
+    public void SetClipboard(byte[] bytes)
+    {
+        var bytesString = ByteArrayToString(bytes);
+        Clipboard.SetText(bytesString);
+    }
+
+    private static string ByteArrayToString(IReadOnlyCollection<byte> ba)
+    {
+        var hex = new StringBuilder(ba.Count * 2);
+        foreach (var b in ba)
+            hex.Append($"{b:X2} ");
+        return hex.ToString();
     }
 }

@@ -70,9 +70,9 @@ internal class ModeSet
     public byte[] GetTrimmedBytes(Rectangle trimRectangle)
     {
         var chunk = new List<byte>();
-        for (var y = 0; y < trimRectangle.Height; y++)
+        for (var dy = 0; dy < trimRectangle.Height; dy++)
         {
-            var startByteIndex = (trimRectangle.Y * MainForm.MaxWidth + trimRectangle.X) * 2;
+            var startByteIndex = ((dy + trimRectangle.Y) * MainForm.MaxWidth + trimRectangle.X) * 2;
             var endByteIndex = startByteIndex + trimRectangle.Width * 2;
             chunk.AddRange(_bytes[startByteIndex..endByteIndex]);
 

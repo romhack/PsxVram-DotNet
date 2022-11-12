@@ -108,6 +108,7 @@ public partial class MainForm : Form
         groupBoxRectangle.Enabled = true;
         groupBoxPalette.Enabled = true;
         MainPictureBox.Visible = true;
+        toolStripDropDownSaveBinaryButton.Enabled = true;
     }
 
 
@@ -280,6 +281,7 @@ public partial class MainForm : Form
         numericUpDownClutX.Visible = radioButtonClut.Checked & isIndexedMode;
         labelClutY.Visible = radioButtonClut.Checked & isIndexedMode;
         numericUpDownClutY.Visible = radioButtonClut.Checked & isIndexedMode;
+        clutToolStripMenuItem.Enabled = radioButtonClut.Checked & isIndexedMode;
         comboBoxDefaultRectangleSize.Visible = radioButtonDefaultRectangle.Checked & (isIndexedMode == false);
         labelRectangleX.Visible = radioButtonCustomRectangle.Checked;
         labelRectangleY.Visible = radioButtonCustomRectangle.Checked;
@@ -522,8 +524,29 @@ public partial class MainForm : Form
         }
         var firstScanlineRectangle = _mainRectangle with {Height = 1};
         var bytes = _modeSet.GetTrimmedBytes(firstScanlineRectangle);
+        _binaryHelper.SetClipboard(bytes);
         _binaryHelper.SaveBinary(bytes, "scanline_pixels");
-        
+    }
 
+    private void rectangleToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+        if (_modeSet is null)
+        {
+            return;
+        }
+        var bytes = _modeSet.GetTrimmedBytes(_mainRectangle);
+        _binaryHelper.SetClipboard(bytes);
+        _binaryHelper.SaveBinary(bytes, "selected_pixels");
+    }
+
+    private void clutToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+        if (_modeSet is null)
+        {
+            return;
+        }
+        var bytes = _modeSet.GetTrimmedBytes(_clutRectangle);
+        _binaryHelper.SetClipboard(bytes);
+        _binaryHelper.SaveBinary(bytes, "clut");
     }
 }

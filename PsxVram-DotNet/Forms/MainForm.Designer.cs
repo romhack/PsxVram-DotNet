@@ -61,8 +61,13 @@
             this.toolStripMain = new System.Windows.Forms.ToolStrip();
             this.openFileButton = new System.Windows.Forms.ToolStripButton();
             this.refreshButton = new System.Windows.Forms.ToolStripButton();
-            this.saveImageButton = new System.Windows.Forms.ToolStripButton();
             this.aboutButton = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.saveImageButton = new System.Windows.Forms.ToolStripButton();
+            this.toolStripDropDownSaveBinaryButton = new System.Windows.Forms.ToolStripDropDownButton();
+            this.firstScanlineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.rectangleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.clutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.statusLabelCursor = new System.Windows.Forms.ToolStripStatusLabel();
@@ -71,10 +76,6 @@
             this.MainPanel = new System.Windows.Forms.Panel();
             this.zoomTrackBar = new System.Windows.Forms.TrackBar();
             this.label1 = new System.Windows.Forms.Label();
-            this.toolStripDropDownButton1 = new System.Windows.Forms.ToolStripDropDownButton();
-            this.firstScanlineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.rectangleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.clutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.MainPictureBox)).BeginInit();
             this.groupBoxMode.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownHeight)).BeginInit();
@@ -544,9 +545,10 @@
             this.toolStripMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.openFileButton,
             this.refreshButton,
-            this.saveImageButton,
             this.aboutButton,
-            this.toolStripDropDownButton1});
+            this.toolStripSeparator1,
+            this.saveImageButton,
+            this.toolStripDropDownSaveBinaryButton});
             this.toolStripMain.Location = new System.Drawing.Point(0, 0);
             this.toolStripMain.Name = "toolStripMain";
             this.toolStripMain.Size = new System.Drawing.Size(1049, 25);
@@ -574,6 +576,22 @@
             this.refreshButton.Text = "Refresh file";
             this.refreshButton.Click += new System.EventHandler(this.refreshButton_Click);
             // 
+            // aboutButton
+            // 
+            this.aboutButton.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.aboutButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.aboutButton.Image = ((System.Drawing.Image)(resources.GetObject("aboutButton.Image")));
+            this.aboutButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.aboutButton.Name = "aboutButton";
+            this.aboutButton.Size = new System.Drawing.Size(23, 22);
+            this.aboutButton.Text = "About";
+            this.aboutButton.Click += new System.EventHandler(this.aboutButton_Click);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
+            // 
             // saveImageButton
             // 
             this.saveImageButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -585,16 +603,41 @@
             this.saveImageButton.Text = "Save mode image";
             this.saveImageButton.Click += new System.EventHandler(this.saveImageButton_Click);
             // 
-            // aboutButton
+            // toolStripDropDownSaveBinaryButton
             // 
-            this.aboutButton.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.aboutButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.aboutButton.Image = ((System.Drawing.Image)(resources.GetObject("aboutButton.Image")));
-            this.aboutButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.aboutButton.Name = "aboutButton";
-            this.aboutButton.Size = new System.Drawing.Size(23, 22);
-            this.aboutButton.Text = "About";
-            this.aboutButton.Click += new System.EventHandler(this.aboutButton_Click);
+            this.toolStripDropDownSaveBinaryButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripDropDownSaveBinaryButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.firstScanlineToolStripMenuItem,
+            this.rectangleToolStripMenuItem,
+            this.clutToolStripMenuItem});
+            this.toolStripDropDownSaveBinaryButton.Enabled = false;
+            this.toolStripDropDownSaveBinaryButton.Image = ((System.Drawing.Image)(resources.GetObject("toolStripDropDownSaveBinaryButton.Image")));
+            this.toolStripDropDownSaveBinaryButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripDropDownSaveBinaryButton.Name = "toolStripDropDownSaveBinaryButton";
+            this.toolStripDropDownSaveBinaryButton.Size = new System.Drawing.Size(29, 22);
+            this.toolStripDropDownSaveBinaryButton.Text = "Save binary dump";
+            // 
+            // firstScanlineToolStripMenuItem
+            // 
+            this.firstScanlineToolStripMenuItem.Name = "firstScanlineToolStripMenuItem";
+            this.firstScanlineToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.firstScanlineToolStripMenuItem.Text = "First scanline";
+            this.firstScanlineToolStripMenuItem.Click += new System.EventHandler(this.firstScanlineToolStripMenuItem_Click);
+            // 
+            // rectangleToolStripMenuItem
+            // 
+            this.rectangleToolStripMenuItem.Name = "rectangleToolStripMenuItem";
+            this.rectangleToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.rectangleToolStripMenuItem.Text = "Rectangle";
+            this.rectangleToolStripMenuItem.Click += new System.EventHandler(this.rectangleToolStripMenuItem_Click);
+            // 
+            // clutToolStripMenuItem
+            // 
+            this.clutToolStripMenuItem.Enabled = false;
+            this.clutToolStripMenuItem.Name = "clutToolStripMenuItem";
+            this.clutToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.clutToolStripMenuItem.Text = "Clut";
+            this.clutToolStripMenuItem.Click += new System.EventHandler(this.clutToolStripMenuItem_Click);
             // 
             // openFileDialog
             // 
@@ -680,38 +723,6 @@
             this.label1.Size = new System.Drawing.Size(39, 15);
             this.label1.TabIndex = 17;
             this.label1.Text = "Zoom";
-            // 
-            // toolStripDropDownButton1
-            // 
-            this.toolStripDropDownButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripDropDownButton1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.firstScanlineToolStripMenuItem,
-            this.rectangleToolStripMenuItem,
-            this.clutToolStripMenuItem});
-            this.toolStripDropDownButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripDropDownButton1.Image")));
-            this.toolStripDropDownButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripDropDownButton1.Name = "toolStripDropDownButton1";
-            this.toolStripDropDownButton1.Size = new System.Drawing.Size(29, 22);
-            this.toolStripDropDownButton1.Text = "toolStripDropDownButton1";
-            // 
-            // firstScanlineToolStripMenuItem
-            // 
-            this.firstScanlineToolStripMenuItem.Name = "firstScanlineToolStripMenuItem";
-            this.firstScanlineToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.firstScanlineToolStripMenuItem.Text = "First scanline";
-            this.firstScanlineToolStripMenuItem.Click += new System.EventHandler(this.firstScanlineToolStripMenuItem_Click);
-            // 
-            // rectangleToolStripMenuItem
-            // 
-            this.rectangleToolStripMenuItem.Name = "rectangleToolStripMenuItem";
-            this.rectangleToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.rectangleToolStripMenuItem.Text = "Rectangle";
-            // 
-            // clutToolStripMenuItem
-            // 
-            this.clutToolStripMenuItem.Name = "clutToolStripMenuItem";
-            this.clutToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.clutToolStripMenuItem.Text = "Clut";
             // 
             // MainForm
             // 
@@ -806,10 +817,11 @@
         private Panel MainPanel;
         private TrackBar zoomTrackBar;
         private Label label1;
-        private ToolStripDropDownButton toolStripDropDownButton1;
+        private ToolStripDropDownButton toolStripDropDownSaveBinaryButton;
         private ToolStripMenuItem firstScanlineToolStripMenuItem;
         private ToolStripMenuItem rectangleToolStripMenuItem;
         private ToolStripMenuItem clutToolStripMenuItem;
+        private ToolStripSeparator toolStripSeparator1;
     }
 }
 
