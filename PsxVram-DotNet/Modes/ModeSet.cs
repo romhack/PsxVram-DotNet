@@ -1,4 +1,6 @@
-﻿namespace PsxVram_DotNet.Modes;
+﻿using PsxVram_DotNet.Forms;
+
+namespace PsxVram_DotNet.Modes;
 
 internal class ModeSet
 {
@@ -13,6 +15,7 @@ internal class ModeSet
 
     private Modes _currentModeIndex;
     private Dictionary<Modes, Mode> _modesDictionary;
+    private byte[] _bytes = Array.Empty<byte>();
 
     public Mode CurrentMode => _modesDictionary[_currentModeIndex];
 
@@ -27,7 +30,13 @@ internal class ModeSet
             return mode16Bpp;
         }
     }
-        
+    
+    public ModeSet(byte[] sourceBytes)
+    {
+        _modesDictionary = CreateModesDictionary(sourceBytes);
+        _currentModeIndex = Modes.Mode16Bpp;
+    }
+
     public Color[] GetClutColors(Rectangle clutRectangle)
     {
         return Mode16Bpp.GetClutColors(clutRectangle);
@@ -39,20 +48,14 @@ internal class ModeSet
     }
 
 
-
-    public ModeSet(byte[] sourceBytes)
-    {
-        _modesDictionary = CreateModesDictionary(sourceBytes);
-        _currentModeIndex = Modes.Mode16Bpp;
-    }
-
     public void Reload(byte[] sourceBytes)
     {
         _modesDictionary = CreateModesDictionary(sourceBytes);
     }
 
-    private static Dictionary<Modes, Mode> CreateModesDictionary(byte[] sourceBytes)
+    private Dictionary<Modes, Mode> CreateModesDictionary(byte[] sourceBytes)
     {
+        _bytes = sourceBytes;
         return new Dictionary<Modes, Mode>
         {
             {Modes.Mode24Bpp, new Mode24Bpp(sourceBytes)},
@@ -61,6 +64,21 @@ internal class ModeSet
             {Modes.Mode4Bpp, new Mode4Bpp(sourceBytes)}
         };
     }
+    /// <summary>
+    /// Get binary chunk of loaded dump, defined by rectangle in 16bpp
+    /// </summary>
+    public byte[] GetTrimmedBytes(Rectangle trimRectangle)
+    {
+        var chunk = new List<byte>();
+        for (var y = 0; y < trimRectangle.Height; y++)
+        {
+            var startByteIndex = (trimRectangle.Y * MainForm.MaxWidth + trimRectangle.X) * 2;
+            var endByteIndex = startByteIndex + trimRectangle.Width * 2;
+            chunk.AddRange(_bytes[startByteIndex..endByteIndex]);
 
+        }
+        return chunk.ToArray();
+        
+    }
 
 }

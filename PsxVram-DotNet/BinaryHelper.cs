@@ -4,17 +4,18 @@ using System.Text;
 
 namespace PsxVram_DotNet;
 
-internal class FileHelper
+internal class BinaryHelper
 {
     private const string DefaultFileName = "vram.bin";
     private const int VramDumpSize = 0x100000;
     private readonly OpenFileDialog _openFileDialog;
-    private string _currentFileName;
+    public string CurrentFileName { get; private set; }
 
-    public FileHelper(OpenFileDialog openFileDialog)
+
+    public BinaryHelper(OpenFileDialog openFileDialog)
     {
         _openFileDialog = openFileDialog;
-        _currentFileName = DefaultFileName;
+        CurrentFileName = DefaultFileName;
     }
 
     /// <summary>
@@ -30,7 +31,7 @@ internal class FileHelper
             startupBytes = ReadFile(arguments[1]);
             if (startupBytes is not null)
             {
-                _currentFileName = arguments[1];
+                CurrentFileName = arguments[1];
             }
         }
         else if (File.Exists(DefaultFileName))
@@ -38,13 +39,13 @@ internal class FileHelper
             startupBytes = ReadFile(DefaultFileName);
             if (startupBytes is not null)
             {
-                _currentFileName = DefaultFileName;
+                CurrentFileName = DefaultFileName;
             }
         }
 
         if (startupBytes is not null)
         {
-            var initialDirectory = Path.GetDirectoryName(_currentFileName);
+            var initialDirectory = Path.GetDirectoryName(CurrentFileName);
             if (string.IsNullOrWhiteSpace(initialDirectory))
             {
                 initialDirectory = AppContext.BaseDirectory;
@@ -71,7 +72,7 @@ internal class FileHelper
         }
         else
         {
-            _currentFileName = newFileName;
+            CurrentFileName = newFileName;
         }
 
         return newFileBytes;
@@ -79,7 +80,7 @@ internal class FileHelper
 
     public byte[]? RefreshFile()
     {
-        var refreshedBytes = ReadFile(_currentFileName);
+        var refreshedBytes = ReadFile(CurrentFileName);
         if (refreshedBytes is null)
         {
             ShowFormatErrorMessage();
@@ -188,8 +189,8 @@ internal class FileHelper
 
     public void SaveModeImage(Image modeImage)
     {
-        var fileName = $"{Path.GetFileNameWithoutExtension(_currentFileName)}_{DateTime.Now:yyyyMMdd_HH_mm_ss}.bmp";
-        var fileDirectory = Path.GetDirectoryName(_currentFileName) ?? "";
+        var fileName = $"{Path.GetFileNameWithoutExtension(CurrentFileName)}_{DateTime.Now:yyyyMMdd_HH_mm_ss}.bmp";
+        var fileDirectory = Path.GetDirectoryName(CurrentFileName) ?? "";
         var filePath = Path.Combine(fileDirectory, fileName);
         try
         {
@@ -198,6 +199,22 @@ internal class FileHelper
         catch (Exception)
         {
             MessageBox.Show(@"Could not write image", @"Write file error", MessageBoxButtons.OK,
+                MessageBoxIcon.Error);
+        }
+    }
+
+    public void SaveBinary(byte[] bytes, string postfix)
+    {
+        var fileName = $"{Path.GetFileNameWithoutExtension(CurrentFileName)}_{DateTime.Now:yyyyMMdd_HH_mm_ss}_{postfix}.bin";
+        var fileDirectory = Path.GetDirectoryName(CurrentFileName) ?? "";
+        var filePath = Path.Combine(fileDirectory, fileName);
+        try
+        {
+            File.WriteAllBytes(filePath, bytes);
+        }
+        catch (Exception)
+        {
+            MessageBox.Show(@"Could not write binary file", @"Write file error", MessageBoxButtons.OK,
                 MessageBoxIcon.Error);
         }
     }

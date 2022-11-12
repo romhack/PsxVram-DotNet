@@ -18,7 +18,7 @@ public partial class MainForm : Form
     private static readonly Brush MainFillBrush = new SolidBrush(Color.FromArgb(0x80, 0, 0xFF, 0xFF));
 
 
-    private readonly FileHelper _fileHelper;
+    private readonly BinaryHelper _binaryHelper;
 
     private readonly ModeForm _modeForm = new();
     private bool _clutMode;
@@ -37,7 +37,7 @@ public partial class MainForm : Form
     public MainForm()
     {
         InitializeComponent();
-        _fileHelper = new FileHelper(openFileDialog);
+        _binaryHelper = new BinaryHelper(openFileDialog);
     }
 
     private void MainForm_Load(object sender, EventArgs e)
@@ -52,7 +52,7 @@ public partial class MainForm : Form
         statusLabelCursor.Text = DefaultCursorString;
         _modeForm.Left = Left + ModeFormOffset;
         _modeForm.Top = Top;
-        var startupSourceBytes = _fileHelper.ReadStartupFile();
+        var startupSourceBytes = _binaryHelper.ReadStartupFile();
         if (startupSourceBytes is null)
         {
             return;
@@ -60,11 +60,12 @@ public partial class MainForm : Form
 
         EnableControls();
         CreateModeSet(startupSourceBytes);
+        SetMainFormCaption();
     }
 
     private void openFileButton_Click(object sender, EventArgs e)
     {
-        var newSourceBytes = _fileHelper.ReadNewFile();
+        var newSourceBytes = _binaryHelper.ReadNewFile();
         if (newSourceBytes is null)
         {
             return;
@@ -79,11 +80,18 @@ public partial class MainForm : Form
             ReloadModeSet(newSourceBytes);
         }
         Activate();
+        SetMainFormCaption();
+    }
+
+    private void SetMainFormCaption()
+    {
+        var fileName = Path.GetFileName(_binaryHelper.CurrentFileName);
+        Text = $@"{fileName} - PsxVram-DotNet";
     }
 
     private void refreshButton_Click(object sender, EventArgs e)
     {
-        var updatedSourceBytes = _fileHelper.RefreshFile();
+        var updatedSourceBytes = _binaryHelper.RefreshFile();
         if (updatedSourceBytes is null)
         {
             return;
@@ -452,7 +460,7 @@ public partial class MainForm : Form
 
     private void saveImageButton_Click(object sender, EventArgs e)
     {
-        _fileHelper.SaveModeImage(_modeForm.ModeImage);
+        _binaryHelper.SaveModeImage(_modeForm.ModeImage);
     }
 
 
@@ -506,4 +514,16 @@ public partial class MainForm : Form
         MainPictureBox.Height = MaxHeight * _zoomFactor;
     }
 
+    private void firstScanlineToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+        if (_modeSet is null)
+        {
+            return;
+        }
+        var firstScanlineRectangle = _mainRectangle with {Height = 1};
+        var bytes = _modeSet.GetTrimmedBytes(firstScanlineRectangle);
+        _binaryHelper.SaveBinary(bytes, "scanline_pixels");
+        
+
+    }
 }
