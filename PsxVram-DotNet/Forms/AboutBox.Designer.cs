@@ -57,7 +57,7 @@
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(194, 25);
             this.label1.TabIndex = 14;
-            this.label1.Text = "PsxVram-DotNet v.0.3";
+            this.label1.Text = "PsxVram-DotNet v.0.4";
             // 
             // linkLabel1
             // 

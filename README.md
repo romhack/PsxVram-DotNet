@@ -10,6 +10,7 @@ Features
 - Predefined texture pages and CLUTs positions for each mode for ease of VRAM navigation
 - GUI with mouse/keyboard naviation
 - Save image function for textures ripping
+- Save selected pixels or CLUT to binary file for search in game's resources
 - DotNet Core application allows to port it to Linux as well
 
 
@@ -49,6 +50,12 @@ Then, you can view the entire dump in all supported PSX modes. Left mouse button
 You can then move through the code in the emulator, rewrite the updated dump over the old one, update the application with the button and see the last changes in the PSX video memory.  
 In the status bar, you can see the necessary coordinates and addresses of the pieces of graphics you are interested in for further work in the debugger.  
 It is possible to save mode window contents to BMP file in corresponding VRAM dump folder. Bitmap mode and palette are transferred to BMP according to current mode. Transparency is supported.  
+
+It is also possible to save CLUT and selected piece of graphics to binary files for further search.
+Suppose you have found specific CLUT in VRAM dump and now want to find where in game resources this CLUT is stored. You highlight this CLUT in indexed mode and select from the drop-down menu: 'Save binary dump -> CLUT'
+The CLUT is then saved to a binary file (in the same folder where the VRAM dump is located), and its hex representation is copied to the clipboard.
+Now you can use applications that can search by the contents of files in a certain folder, go to the rip file structure of the game's ISO and find the file that contains these bytes. Some file managers have this feature (like Total Commander). And then in the hex editor, you can find the offset of these bytes in the game resource file itself.
+The same logic applies to the search for pixels directly in game resources. In the main window, you select with a rectangle the graphics area in VRAM that you want to find, save the first scanline of the selected piece to a binary file and search for it in the rip folder of the game ISO.
 
 Hotkeys
 -------

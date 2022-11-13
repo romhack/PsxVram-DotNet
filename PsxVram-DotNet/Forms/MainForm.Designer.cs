@@ -636,7 +636,7 @@
             this.clutToolStripMenuItem.Enabled = false;
             this.clutToolStripMenuItem.Name = "clutToolStripMenuItem";
             this.clutToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.clutToolStripMenuItem.Text = "Clut";
+            this.clutToolStripMenuItem.Text = "CLUT";
             this.clutToolStripMenuItem.Click += new System.EventHandler(this.clutToolStripMenuItem_Click);
             // 
             // openFileDialog
